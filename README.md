@@ -66,8 +66,14 @@ npx playwright show-report
 │   │   ├── 236_BCP_test_playwright.spec.ts     # Browser-level fixture with dual contexts
 │   │   └── 237_BCP_test_options.spec.ts        # Context options (viewport, locale, mobile)
 │   ├── 03_Locators_Commands/
-│   │   ├── 239_Project_VWO_Login.spec.ts   # VWO login test with CSS selector concepts
-│   │   └── 240_XPath_spec.ts               # XPath locators and selectors
+│   │   ├── 239_Project_VWO_Login.spec.ts              # VWO login test with CSS selector concepts
+│   │   ├── 240_XPath_spec.ts                          # XPath locators and selectors
+│   │   ├── 241_Project_VWO_signup.spec.ts             # VWO signup error validation with locators
+│   │   ├── 242_Project_VWO_Login_Playwright.spec.ts   # VWO signup test using getByRole locators
+│   │   ├── 243_Playwright_commands.spec.ts            # page.goto waitUntil options demo
+│   │   ├── 244_Refere_Playwright.spec.ts              # Navigation with custom referer header
+│   │   ├── 245_GetbyRole.spec.ts                      # getByRole locator demo (Cura Healthcare)
+│   │   └── 246_press_sequential.spec.ts               # pressSequentially and navigation demo
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -106,6 +112,12 @@ npx playwright show-report
 
 - **`239_Project_VWO_Login.spec.ts`** — VWO login page test demonstrating CSS selector strategies (id, class, name, tag) and Playwright's auto-waiting behavior.
 - **`240_XPath_spec.ts`** — XPath locators and selector patterns.
+- **`241_Project_VWO_signup.spec.ts`** — VWO signup page test: validates the error message for an invalid email using CSS and XPath locators.
+- **`242_Project_VWO_Login_Playwright.spec.ts`** — VWO signup test using `getByRole` locators (`textbox`, `checkbox`, `button`) for accessibility-based selection.
+- **`243_Playwright_commands.spec.ts`** — Demonstrates `page.goto` with different `waitUntil` options: `commit`, `domcontentloaded`, `load`, and `networkidle`.
+- **`244_Refere_Playwright.spec.ts`** — Navigation basics: default `page.goto` behavior and using a custom `referer` header.
+- **`245_GetbyRole.spec.ts`** — `getByRole` locator demonstration on the Cura Healthcare demo site (e.g., clicking a link by role and name).
+- **`246_press_sequential.spec.ts`** — Demonstrates `pressSequentially` for realistic typing with delay, plus navigation methods (`goBack`).
 
 ### `tests/Live_Task/`
 
