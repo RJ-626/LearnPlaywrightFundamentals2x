@@ -65,6 +65,13 @@ npx playwright show-report
 │   │   ├── 235_Test_Interface_playwright.spec.ts # Test runner interface & form interactions
 │   │   ├── 236_BCP_test_playwright.spec.ts     # Browser-level fixture with dual contexts
 │   │   └── 237_BCP_test_options.spec.ts        # Context options (viewport, locale, mobile)
+│   ├── 03_Locators_Commands/
+│   │   ├── 239_Project_VWO_Login.spec.ts   # VWO login test with CSS selector concepts
+│   │   └── 240_XPath_spec.ts               # XPath locators and selectors
+│   ├── Live_Task/
+│   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
+│   │   ├── Task_8th_July.spec.ts           # HTML form creation task
+│   │   └── Task_10th_July.spec.ts          # XPath relative locators task
 │   └── Template.spec.ts                    # Minimal test template
 ├── playwright.config.ts    # Playwright configuration
 ├── package.json
@@ -94,6 +101,17 @@ npx playwright show-report
 - **`237_BCP_test_options.spec.ts`** — Configure context-level options:
   - Custom viewport, locale, timezone, geolocation
   - Mobile emulation (iPhone viewport, touch, user-agent)
+
+### `tests/03_Locators_Commands/`
+
+- **`239_Project_VWO_Login.spec.ts`** — VWO login page test demonstrating CSS selector strategies (id, class, name, tag) and Playwright's auto-waiting behavior.
+- **`240_XPath_spec.ts`** — XPath locators and selector patterns.
+
+### `tests/Live_Task/`
+
+- **`Task_6th_July.spec.ts`** — Live task: open pages in separate browser contexts (multi-site demo).
+- **`Task_8th_July.spec.ts`** — Live task: HTML form creation (email, password, remember me, sign-up).
+- **`Task_10th_July.spec.ts`** — Live task: XPath relative locators for the Cura Healthcare demo site.
 
 ## Configuration Highlights
 

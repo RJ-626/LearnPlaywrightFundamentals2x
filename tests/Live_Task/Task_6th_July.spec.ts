@@ -1,3 +1,12 @@
+//Browser 
+//Context - 1 - https://app.thetestingacademy.com/playwright/ttacart/
+
+//Context - 2 → https://tta-bank-digital-973242068062.us-west1.run.app/
+
+
+
+
+
 import { test, expect } from "@playwright/test";
 
 test("Open pages in separate context", async ({ browser }) => {
