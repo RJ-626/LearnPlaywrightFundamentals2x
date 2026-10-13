@@ -10,4 +10,5 @@ node_modules/
 # Generated artifacts
 allure-results/
 custom-report/
+tta-report/
 user-session.json
