@@ -67,6 +67,7 @@ npx playwright show-report
 │   │   ├── 236_BCP_test_playwright.spec.ts     # Browser-level fixture with dual contexts
 │   │   └── 237_BCP_test_options.spec.ts        # Context options (viewport, locale, mobile)
 │   ├── 03_Locators_Commands/
+│   │   ├── 238_Locator_strategy.spec.ts                 # Locator strategy demo (TTA cart page)
 │   │   ├── 239_Project_VWO_Login.spec.ts              # VWO login test with CSS selector concepts
 │   │   ├── 240_XPath_spec.ts                          # XPath locators and selectors
 │   │   ├── 241_Project_VWO_signup.spec.ts             # VWO signup error validation with locators
@@ -88,6 +89,8 @@ npx playwright show-report
 │   └── Template.spec.ts                    # Minimal test template
 ├── reporters/
 │   └── custom-reporter.ts                 # Custom Playwright Reporter with HTML/JSON output + steps
+├── Utils/
+│   └── CustomReporter.ts                  # TTA real-time HTML reporter (timestamped runs + history)
 ├── playwright.config.ts    # Playwright configuration
 ├── package.json
 ├── tsconfig.json
@@ -161,6 +164,44 @@ After a test run, the following files are generated in `custom-report/`:
 - `custom-report.json` — Machine-readable JSON report
 - `attachments/` — Folder containing screenshots (`.png`), videos (`.webm`), and traces (`.zip`)
 
+## TTA Real-Time Custom Reporter (`Utils/CustomReporter.ts`)
+
+This project also includes the **TTA Reporter** — a custom Playwright reporter that generates a self-updating HTML report *while tests are still running*.
+
+### Features
+
+- **Real-Time Updates** — The report auto-refreshes every 5 seconds and includes in-progress tests
+- **Timestamped Runs** — Each run creates `tta-report/report_<YYYYMMDD_HHMMSS>.html`
+- **History & Latest Pages** — `tta-report/history.html` lists all previous runs; `tta-report/index.html` always redirects to the latest one
+- **Console Integration** — Live start / step / result output in the terminal with running pass-fail-skip totals
+- **Step-Level Detail** — Nested `test.step()` results with durations, console logs, screenshots, errors, and stack traces
+- **Video Timestamps** — Each step shows the exact video time range to jump to
+- **Auto-captured Attachments** — Screenshots, videos, and traces are copied into `tta-report/screenshots/`, `tta-report/videos/`, and `tta-report/traces/`
+- **Environment Metadata** — Environment (`TEST_ENV`, defaults to UAT), author (`TEST_AUTHOR`, defaults to TTA-QA), browser, platform, workers, and run ID
+
+### How to Use
+
+The TTA reporter is **not enabled by default**. To use it, add it to the reporter list in `playwright.config.ts`:
+
+```typescript
+reporter: [
+  ["line"],
+  ["./Utils/CustomReporter.ts"]
+],
+```
+
+Then run the tests and open the report:
+
+```bash
+npx playwright test
+
+# On Windows
+start tta-report/index.html
+
+# On macOS / Linux
+open tta-report/index.html
+```
+
 ## What's Inside
 
 ### `tests/01_Basics/`
@@ -187,6 +228,7 @@ After a test run, the following files are generated in `custom-report/`:
 
 ### `tests/03_Locators_Commands/`
 
+- **`238_Locator_strategy.spec.ts`** — Locator strategy starter: navigates to the Testing Academy cart demo page for practicing different locator strategies.
 - **`239_Project_VWO_Login.spec.ts`** — VWO login page test demonstrating CSS selector strategies (id, class, name, tag) and Playwright's auto-waiting behavior.
 - **`240_XPath_spec.ts`** — XPath locators and selector patterns.
 - **`241_Project_VWO_signup.spec.ts`** — VWO signup page test: validates the error message for an invalid email using CSS and XPath locators.
