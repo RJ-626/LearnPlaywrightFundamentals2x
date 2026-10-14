@@ -81,10 +81,18 @@ npx playwright show-report
 │   ├── 05_Allure_Reporting/
 │   │   ├── 248_Test_vwo_dashboard.spec.ts             # VWO dashboard test with Allure annotations + custom reporter steps
 │   │   └── 249_Test_vwo_dashboard_no_custom report.spec.ts # VWO dashboard test without custom reporter
+│   ├── 06_Multiple_Element_/
+│   │   ├── 250_multiple_elements.spec.ts              # Handles multiple matching elements via loop (allInnerTexts / all)
+│   │   └── 251_multi_elements_direct.spec.ts          # Handles multiple matching elements with a precise getByRole locator
+│   ├── 07_WebTables/
+│   │   ├── 252_web_tables_dynamic_Xpath.spec.ts       # Web table traversal with dynamic XPath (find country for a name)
+│   │   └── 253_web_tables_dynamic.spec.ts             # Dynamic web table extraction with CSS locators and row loops
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
-│   │   └── Task_10th_July.spec.ts          # XPath relative locators task
+│   │   ├── Task_10th_July.spec.ts          # XPath relative locators task
+│   │   ├── Task_17th_July.spec.ts          # Student login form automation + URL assertion
+│   │   └── Task_17th_July_advanced.spec.ts # Loop through employee table rows to find & delete first Terminated employee
 │   ├── Custom_Reporter_Demo.spec.ts        # Demo test with nested test.step() for custom reporter
 │   └── Template.spec.ts                    # Minimal test template
 ├── reporters/
@@ -247,11 +255,23 @@ open tta-report/index.html
 - **`248_Test_vwo_dashboard.spec.ts`** — VWO dashboard test that reuses the saved session (`storageState`), uses Allure annotations (`allure.epic`, `allure.feature`, `allure.story`, `allure.tag`, `allure.severity`), and includes `test.step()` for custom reporter. Tags: `@P0 @smoke` and `@P1 @regression`.
 - **`249_Test_vwo_dashboard_no_custom report.spec.ts`** — Same VWO dashboard test without custom reporter integration.
 
+### `tests/06_Multiple_Element_/`
+
+- **`250_multiple_elements.spec.ts`** — Handles multiple matching elements: collects all link texts with `allInnerTexts()`, loops through them to click "Forgotten Password", then iterates all elements with `.all()` to read `href` attributes.
+- **`251_multi_elements_direct.spec.ts`** — Same goal without loops: uses a precise `getByRole('link', { name: 'Forgotten Password' })` locator to avoid strict mode violations when the text matches multiple elements.
+
+### `tests/07_WebTables/`
+
+- **`252_web_tables_dynamic_Xpath.spec.ts`** — Static HTML web table traversal with dynamic XPath: builds `//table[@id='customers']/tbody/tr[i]/td[j]` paths in a nested loop, counts rows/columns dynamically, and finds the country for "Helen Bennett" using `following-sibling::td`.
+- **`253_web_tables_dynamic.spec.ts`** — Dynamic web table extraction: counts rows with `.count()` and prints every row's cell data using `rows.nth(i).locator('td').allTextContents()`.
+
 ### `tests/Live_Task/`
 
 - **`Task_6th_July.spec.ts`** — Live task: open pages in separate browser contexts (multi-site demo).
 - **`Task_8th_July.spec.ts`** — Live task: HTML form creation (email, password, remember me, sign-up).
 - **`Task_10th_July.spec.ts`** — Live task: XPath relative locators for the Cura Healthcare demo site.
+- **`Task_17th_July.spec.ts`** — Live task: student login form automation using `getByRole` locators (email, password, remember-me checkbox) with a URL assertion after submit.
+- **`Task_17th_July_advanced.spec.ts`** — Live task: logs into the AwesomeQA HR portal, loops through the employee table row by row, finds the first employee with "Terminated" status, and clicks its delete icon via a relative XPath (`parent::div` / `following-sibling::div`).
 
 ## Configuration Highlights
 
@@ -263,9 +283,9 @@ Defined in `playwright.config.ts`:
 - `fullyParallel: true` — run test files in parallel
 - `reporter: ["line"], ["allure-playwright"], ["./reporters/custom-reporter.ts"]` — multiple reporters (line, Allure, custom HTML)
 - `headless: false` — run browsers in headed mode by default
-- `screenshot: 'on'` — capture screenshots for every test
-- `video: 'on'` — record video for every test
-- `trace: 'on'` — capture traces for every test
+- `screenshot: 'only-on-failure'` — capture screenshots only for failed tests
+- `video: 'retain-on-failure'` — record video and keep it only for failed tests
+- `trace: 'retain-on-failure'` — capture traces and keep them only for failed tests
 - **Projects:** Chromium only (Firefox & WebKit commented out)
 - CI-aware retries (`retries: 2`) and single worker (`workers: 1`) when `process.env.CI` is set
 
