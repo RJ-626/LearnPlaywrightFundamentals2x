@@ -1,0 +1,10 @@
+{
+    // Always start a fresh Playwright test server.
+    // A wedged server (e.g. left over from a page.pause() run) is the #1 cause
+    // of the green run buttons disappearing in VS Code.
+    "playwright.reuseServer": false,
+
+    // The green play buttons render in the editor glyph margin.
+    // Keep it enabled at workspace level so user settings can't disable it.
+    "editor.glyphMargin": true
+}

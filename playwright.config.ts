@@ -15,6 +15,9 @@ export default defineConfig({
   timeout: 120000,
   testDir: './tests',
   testMatch: ['tests/**/*.spec.ts'],
+  // Local, non-OneDrive folder: avoids OneDrive sync/lock stalls on artifacts
+  // (was the cause of ~17s 'Close context' per run). Absolute path is fine.
+  outputDir: 'C:/Users/DELL/pw-test-results',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -38,7 +41,6 @@ export default defineConfig({
     trace: 'retain-on-failure',
     headless: false,
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
   },
 
   /* Configure projects for major browsers */

@@ -26,20 +26,23 @@ npx playwright install
 ## Running Tests
 
 ```bash
-# Run all tests (headless)
-npx playwright test
+# Run all tests (headed mode, per config)
+npm test                    # or: npx playwright test
 
-# Run in headed mode (watch the browser)
-npx playwright test --headed
+# Run in headed mode explicitly
+npm run test:headed
 
 # Run a single spec
-npx playwright test tests/example.spec.ts
+npm test -- tests/07_WebTables/254_filter_page_locator.spec.ts
 
 # Run in UI mode (interactive)
-npx playwright test --ui
+npm run test:ui
 
-# Debug a test
-npx playwright test --debug
+# Debug a test (opens Playwright Inspector; page.pause() works here)
+npm run test:debug
+
+# List all discovered tests without running them
+npm run list
 ```
 
 ## Viewing the Report
@@ -86,7 +89,9 @@ npx playwright show-report
 │   │   └── 251_multi_elements_direct.spec.ts          # Handles multiple matching elements with a precise getByRole locator
 │   ├── 07_WebTables/
 │   │   ├── 252_web_tables_dynamic_Xpath.spec.ts       # Web table traversal with dynamic XPath (find country for a name)
-│   │   └── 253_web_tables_dynamic.spec.ts             # Dynamic web table extraction with CSS locators and row loops
+│   │   ├── 253_web_tables_dynamic.spec.ts             # Dynamic web table extraction with CSS locators and row loops
+│   │   ├── 254_filter_page_locator.spec.ts            # locator().filter({ hasText }) to narrow multiple matches
+│   │   └── 255_web_table_xpath.spec.ts                # Click a row checkbox via preceding-sibling XPath
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -264,6 +269,8 @@ open tta-report/index.html
 
 - **`252_web_tables_dynamic_Xpath.spec.ts`** — Static HTML web table traversal with dynamic XPath: builds `//table[@id='customers']/tbody/tr[i]/td[j]` paths in a nested loop, counts rows/columns dynamically, and finds the country for "Helen Bennett" using `following-sibling::td`.
 - **`253_web_tables_dynamic.spec.ts`** — Dynamic web table extraction: counts rows with `.count()` and prints every row's cell data using `rows.nth(i).locator('td').allTextContents()`.
+- **`254_filter_page_locator.spec.ts`** — Locator `filter()` demo on the TTA multi-element page: narrows `a.list-group-item` matches with `filter({ hasText: 'Forgotten Password' })`, then verifies link counts, footer link attributes and URL hash navigation.
+- **`255_web_table_xpath.spec.ts`** — Web table XPath demo: clicks the checkbox of a specific row using `//td[text()='Aarav.Sharma']/preceding-sibling::td/input[@type='checkbox']` (sibling-axis traversal).
 
 ### `tests/Live_Task/`
 
@@ -279,15 +286,32 @@ Defined in `playwright.config.ts`:
 
 - `testDir: './tests'` — root directory for test files
 - `testMatch: ['tests/**/*.spec.ts']` — match all `.spec.ts` files recursively
-- `timeout: 120000` — global test timeout (120s) to handle video recording overhead
+- `timeout: 120000` — global test timeout (120s)
+- `outputDir: 'C:/Users/DELL/pw-test-results'` — local (non-OneDrive) artifact folder; avoids OneDrive sync/lock stalls that were adding ~17s per run (tests: 54s → 23s)
 - `fullyParallel: true` — run test files in parallel
 - `reporter: ["line"], ["allure-playwright"], ["./reporters/custom-reporter.ts"]` — multiple reporters (line, Allure, custom HTML)
 - `headless: false` — run browsers in headed mode by default
 - `screenshot: 'only-on-failure'` — capture screenshots only for failed tests
-- `video: 'retain-on-failure'` — record video and keep it only for failed tests
-- `trace: 'retain-on-failure'` — capture traces and keep them only for failed tests
+- `trace: 'retain-on-failure'` — capture traces and keep them only for failed tests (open with `npx playwright show-trace <path>`)
 - **Projects:** Chromium only (Firefox & WebKit commented out)
 - CI-aware retries (`retries: 2`) and single worker (`workers: 1`) when `process.env.CI` is set
+
+## Troubleshooting Tips
+
+### VS Code: green run buttons missing
+
+- Ensure the **chromium** project is enabled in the Playwright sidebar (Projects section) — buttons only show for enabled projects.
+- Run **Playwright: Reload tests** from the Command Palette, or kill leftover `node.exe ... cli.js test-server` processes and reload the window.
+- This repo's `.vscode/settings.json` sets `playwright.reuseServer: false` so a wedged test server is never reused across sessions.
+
+### `page.pause()` hangs the test run
+
+`page.pause()` is for **debug mode only**. Running a test that contains it via the normal Run button hangs it indefinitely (the test timeout is disabled while paused). Use the **Debug** button (bug icon) or `npm run test:debug` when you want breakpoints/pausing.
+
+### XPath works in the test but shows 0 results in Chrome DevTools
+
+- In the Elements panel Ctrl+F search, paste the **bare XPath only** (starting with `//`). A prefix like `xpath=` or a wrapper like `page.locator('...')` makes DevTools fall back to a plain-text search → 0 results.
+- Verify reliably in the Console instead: `$x("//td[text()='Aarav.Sharma']/preceding-sibling::td/input[@type='checkbox']")` returns the matched elements.
 
 ## Learn More
 
