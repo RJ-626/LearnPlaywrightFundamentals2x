@@ -91,6 +91,7 @@ npx playwright show-report
 │   │   ├── 252_web_tables_dynamic_Xpath.spec.ts       # Web table traversal with dynamic XPath (find country for a name)
 │   │   ├── 253_web_tables_dynamic.spec.ts             # Dynamic web table extraction with CSS locators and row loops
 │   │   ├── 254_filter_page_locator.spec.ts            # locator().filter({ hasText }) to narrow multiple matches
+│   │   ├── 255_web_table_xpath.spec.ts                # Click a row checkbox via preceding-sibling XPath
 │   │   ├── 256_web_table_xpath.spec.ts                # Read an employee's email & country via row filter
 │   │   ├── 257_web_table_xpath_pagination.spec.ts     # While-loop pagination walk to find a row (unknown page count)
 │   │   ├── 258_web_table_xpath_pagination.spec.ts     # For-loop over known pages; collect all emails
@@ -273,6 +274,7 @@ open tta-report/index.html
 - **`252_web_tables_dynamic_Xpath.spec.ts`** — Static HTML web table traversal with dynamic XPath: builds `//table[@id='customers']/tbody/tr[i]/td[j]` paths in a nested loop, counts rows/columns dynamically, and finds the country for "Helen Bennett" using `following-sibling::td`.
 - **`253_web_tables_dynamic.spec.ts`** — Dynamic web table extraction: counts rows with `.count()` and prints every row's cell data using `rows.nth(i).locator('td').allTextContents()`.
 - **`254_filter_page_locator.spec.ts`** — Locator `filter()` demo on the TTA multi-element page: narrows `a.list-group-item` matches with `filter({ hasText: 'Forgotten Password' })`, then verifies link counts, footer link attributes and URL hash navigation.
+- **`255_web_table_xpath.spec.ts`** — Web table XPath demo: clicks the checkbox of a specific row using `//td[text()='Aarav.Sharma']/preceding-sibling::td/input[@type='checkbox']` (sibling-axis traversal) and a `tr:has(td:text(...))` selector.
 - **`256_web_table_xpath.spec.ts`** — Web table read demo on the TTA employees table: filters rows with `locator('#employees-tbody tr').filter({ hasText: 'Priya Kapoor' })` and reads the row's email and country cells (`td[data-col="email"]` / `td[data-col="country"]`).
 - **`257_web_table_xpath_pagination.spec.ts`** — Paginated web table walk with *unknown* page count: `while` loop that filters rows by name and clicks `next-page` until the row is found or the button is disabled (finds "Camila Lopez" on page 3 and reads her email/country).
 - **`258_web_table_xpath_pagination.spec.ts`** — Paginated web table walk with *known* page count: `for` loop over the `page-{n}` pager buttons that collects every employee email across all pages into one array.
