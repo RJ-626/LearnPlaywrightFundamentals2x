@@ -96,12 +96,18 @@ npx playwright show-report
 │   │   ├── 257_web_table_xpath_pagination.spec.ts     # While-loop pagination walk to find a row (unknown page count)
 │   │   ├── 258_web_table_xpath_pagination.spec.ts     # For-loop over known pages; collect all emails
 │   │   └── 259_web_table_xpath_pagination_function.spec.ts # Reusable findRowByName(page, name) helper for paginated tables
+│   ├── 08_Web_Select_Frames_Iframe/
+│   │   ├── 260_normal_dropdown_select.spec.ts      # selectOption on a native <select> dropdown
+│   │   ├── 261_custom_dropdown_select.spec.ts      # Custom dropdown widgets via testid triggers + option roles
+│   │   └── 262_advance_select_dropdown.spec.ts     # Searchable / multi / creatable / grouped / async dropdowns
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
 │   │   ├── Task_10th_July.spec.ts          # XPath relative locators task
 │   │   ├── Task_17th_July.spec.ts          # Student login form automation + URL assertion
-│   │   └── Task_17th_July_advanced.spec.ts # Loop through employee table rows to find & delete first Terminated employee
+│   │   ├── Task_17th_July_advanced.spec.ts # Loop through employee table rows to find & delete first Terminated employee
+│   │   ├── Task_19th_July.spec.ts          # Web table row filter + paginated email lookup (Mia Hoffmann)
+│   │   └── Task_20th_July.spec.ts          # SpiceJet origin/destination selection via airport typeahead
 │   ├── Custom_Reporter_Demo.spec.ts        # Demo test with nested test.step() for custom reporter
 │   └── Template.spec.ts                    # Minimal test template
 ├── reporters/
@@ -280,6 +286,12 @@ open tta-report/index.html
 - **`258_web_table_xpath_pagination.spec.ts`** — Paginated web table walk with *known* page count: `for` loop over the `page-{n}` pager buttons that collects every employee email across all pages into one array.
 - **`259_web_table_xpath_pagination_function.spec.ts`** — Refactor of the 257 pattern into a reusable `findRowByName(page, name)` helper that walks pages and returns the row `Locator` (or `null` when the employee isn't found).
 
+### `tests/08_Web_Select_Frames_Iframe/`
+
+- **`260_normal_dropdown_select.spec.ts`** — Native `<select>` dropdown handling on the-internet.herokuapp.com: `selectOption('2')` to pick an option by value.
+- **`261_custom_dropdown_select.spec.ts`** — Custom (non-`<select>`) dropdown widgets on the TTA dropdowns page: open each dropdown by its `data-testid` trigger, choose options via `getByRole('option')` / exact `getByText`, then click save.
+- **`262_advance_select_dropdown.spec.ts`** — Advanced select-box variants on the TTA select-boxes page: single searchable, multi-select chips (with remove button + `Escape`), creatable multi-select, grouped, and async searchable dropdowns (asserts the async menu contains the filtered option before clicking).
+
 ### `tests/Live_Task/`
 
 - **`Task_6th_July.spec.ts`** — Live task: open pages in separate browser contexts (multi-site demo).
@@ -287,6 +299,8 @@ open tta-report/index.html
 - **`Task_10th_July.spec.ts`** — Live task: XPath relative locators for the Cura Healthcare demo site.
 - **`Task_17th_July.spec.ts`** — Live task: student login form automation using `getByRole` locators (email, password, remember-me checkbox) with a URL assertion after submit.
 - **`Task_17th_July_advanced.spec.ts`** — Live task: logs into the AwesomeQA HR portal, loops through the employee table row by row, finds the first employee with "Terminated" status, and clicks its delete icon via a relative XPath (`parent::div` / `following-sibling::div`).
+- **`Task_19th_July.spec.ts`** — Live task with two web table challenges on the TTA table page: find the country of "Yoshi Tannamuri" in the companies table via `locator().filter()`, and find "Mia Hoffmann"'s email in the paginated employees table with a `while` loop that clicks Next until the row appears.
+- **`Task_20th_July.spec.ts`** — Live task: SpiceJet booking widget — select origin (Delhi) and destination (Bengaluru) via the `to-testID-origin` / `to-testID-destination` containers, typing with `pressSequentially` to trigger the airport typeahead, asserting the picked values with `toHaveValue`. Grants the `notifications` permission so Chrome's native "Allow this time" prompt never appears.
 
 ## Configuration Highlights
 
@@ -320,6 +334,14 @@ Defined in `playwright.config.ts`:
 
 - In the Elements panel Ctrl+F search, paste the **bare XPath only** (starting with `//`). A prefix like `xpath=` or a wrapper like `page.locator('...')` makes DevTools fall back to a plain-text search → 0 results.
 - Verify reliably in the Console instead: `$x("//td[text()='Aarav.Sharma']/preceding-sibling::td/input[@type='checkbox']")` returns the matched elements.
+
+### Chrome's native permission prompt ("Allow this time") can't be clicked
+
+- Buttons like "Allow this time" belong to the **browser UI**, not the page DOM — `page.getByText("Allow this time")` will time out forever. Pre-grant the permission instead: `test.use({ permissions: ['notifications'] })` (see `Task_20th_July.spec.ts`). The prompt never blocks page interactions, so it can also just be ignored.
+
+### `fill()` doesn't open suggestions on typeahead inputs
+
+- `fill()` sets the input value in one shot; React typeaheads (e.g., SpiceJet's airport picker) only filter/autocomplete on real key events. Type with `pressSequentially('del', { delay: 150 })` instead, then assert the completed value with `expect(input).toHaveValue(/Delhi/)` — input *values* are invisible to `toContainText`.
 
 ## Learn More
 
