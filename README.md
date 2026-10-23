@@ -100,6 +100,13 @@ npx playwright show-report
 │   │   ├── 260_normal_dropdown_select.spec.ts      # selectOption on a native <select> dropdown
 │   │   ├── 261_custom_dropdown_select.spec.ts      # Custom dropdown widgets via testid triggers + option roles
 │   │   └── 262_advance_select_dropdown.spec.ts     # Searchable / multi / creatable / grouped / async dropdowns
+│   ├── 09_Frame_Iframe/
+│   │   ├── 263_iframe.spec.ts                      # Single iframe interaction via frameLocator
+│   │   └── 264_multiple_frame.spec.ts              # Multiple frames: enumerate <frame> tags + click inside side frame
+│   ├── 10_Keyboard_Hover_Drag_Drop/
+│   │   ├── 265_Keyboard.spec.ts                    # Keyboard press demo (keycode.info)
+│   │   ├── 266_Spicejet.hover.spec.ts              # Hover menu navigation (SpiceJet Add-ons)
+│   │   └── learning.md                             # Keyboard keys & mouse up/down reference notes
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -291,6 +298,17 @@ open tta-report/index.html
 - **`260_normal_dropdown_select.spec.ts`** — Native `<select>` dropdown handling on the-internet.herokuapp.com: `selectOption('2')` to pick an option by value.
 - **`261_custom_dropdown_select.spec.ts`** — Custom (non-`<select>`) dropdown widgets on the TTA dropdowns page: open each dropdown by its `data-testid` trigger, choose options via `getByRole('option')` / exact `getByText`, then click save.
 - **`262_advance_select_dropdown.spec.ts`** — Advanced select-box variants on the TTA select-boxes page: single searchable, multi-select chips (with remove button + `Escape`), creatable multi-select, grouped, and async searchable dropdowns (asserts the async menu contains the filtered option before clicking).
+
+### `tests/09_Frame_Iframe/`
+
+- **`263_iframe.spec.ts`** — Single iframe handling on the TTA frames page: creates a `FrameLocator` via `page.frameLocator('#frame-one')`, fills the vehicle form fields inside the frame, submits it, and reads the output text from within the frame.
+- **`264_multiple_frame.spec.ts`** — Multiple-frames demo: reads the header from the `[name="main"]` frame, enumerates all `<frame>` elements with `.all()` to print their `name`/`src` attributes, then clicks a link inside the `[name="side"]` frame.
+
+### `tests/10_Keyboard_Hover_Drag_Drop/`
+
+- **`265_Keyboard.spec.ts`** — Keyboard API demo on keycode.info: presses letters and navigation keys with `page.keyboard.press()` (e.g., `ArrowLeft` / `ArrowRight`) and captures a screenshot.
+- **`266_Spicejet.hover.spec.ts`** — Hover demo on the SpiceJet site: hovers the "Add-ons" menu with `locator.hover()` to reveal the flyout and clicks the "FlyEarly" option.
+- **`learning.md`** — Reference notes for this module: all supported keyboard keys (modifiers, navigation, F1–F12, numpad, media keys), `keyboard` methods (`press` / `type` / `insertText` / `down` / `up`), mouse methods (`up` / `down` / `click` / `dblclick` / `move` / `wheel`), key combinations, hover options, and all three drag & drop approaches.
 
 ### `tests/Live_Task/`
 
