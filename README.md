@@ -106,15 +106,23 @@ npx playwright show-report
 │   ├── 10_Keyboard_Hover_Drag_Drop/
 │   │   ├── 265_Keyboard.spec.ts                    # Keyboard press demo (keycode.info)
 │   │   ├── 266_Spicejet.hover.spec.ts              # Hover menu navigation (SpiceJet Add-ons)
+│   │   ├── 267_Drag_Drop.spec.ts                   # Basic dragTo between two columns (the-internet.herokuapp.com)
+│   │   ├── 268_Advance_Drag_Drop.spec.ts           # HTML5 dragTo on the TTA Kanban board with count assertion
+│   │   ├── 269_Context_click.spec.ts               # Right-click custom context menu: open, count items
 │   │   └── learning.md                             # Keyboard keys & mouse up/down reference notes
+│   ├── 11_JS_Alerts/
+│   │   └── 270_js_alerts.spec.ts                   # JS alert / confirm / prompt handling via dialog events
+│   ├── 12_Handle_SVG/
+│   │   └── 271_svg.spec.ts                         # Flipkart search via the SVG search icon + result titles
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
 │   │   ├── Task_10th_July.spec.ts          # XPath relative locators task
 │   │   ├── Task_17th_July.spec.ts          # Student login form automation + URL assertion
 │   │   ├── Task_17th_July_advanced.spec.ts # Loop through employee table rows to find & delete first Terminated employee
-│   │   ├── Task_19th_July.spec.ts          # Web table row filter + paginated email lookup (Mia Hoffmann)
-│   │   └── Task_20th_July.spec.ts          # SpiceJet origin/destination selection via airport typeahead
+│   │   ├── Task_19th_July.spec.ts           # Web table row filter + paginated email lookup (Mia Hoffmann)
+│   │   ├── Task_20th_July.spec.ts           # SpiceJet origin/destination selection via airport typeahead
+│   │   └── Task_22nd_July.spec.ts           # Hover Add-ons menu, print all options, click Wifi + output assertion
 │   ├── Custom_Reporter_Demo.spec.ts        # Demo test with nested test.step() for custom reporter
 │   └── Template.spec.ts                    # Minimal test template
 ├── reporters/
@@ -308,6 +316,11 @@ open tta-report/index.html
 
 - **`265_Keyboard.spec.ts`** — Keyboard API demo on keycode.info: presses letters and navigation keys with `page.keyboard.press()` (e.g., `ArrowLeft` / `ArrowRight`) and captures a screenshot.
 - **`266_Spicejet.hover.spec.ts`** — Hover demo on the SpiceJet site: hovers the "Add-ons" menu with `locator.hover()` to reveal the flyout and clicks the "FlyEarly" option.
+- **`267_Drag_Drop.spec.ts`** — Basic drag & drop on the-internet.herokuapp.com: swaps columns A and B with `columnA.dragTo(columnB)`.
+- **`268_Advance_Drag_Drop.spec.ts`** — HTML5 drag & drop on the TTA Kanban board: drags `card-write-spec` from "To do" into "In progress" with `getByTestId().dragTo()` and asserts the column count badge becomes `1` (`toHaveText`). Lessons baked in:
+  - Cards have `id` attributes but the columns **don't** — only `data-testid="col-*"` — so `#col-in-progress` matches nothing and `dragTo()` hangs until timeout.
+  - A top-level `viewport` in `use` is **overridden** by the project's `...devices['Desktop Chrome']` spread (device defaults win) — set the viewport again at project level for a real 1920×1080.
+- **`269_Context_click.spec.ts`** — Custom context menu on the TTA context-menu page: right-clicks `span.context-menu-one` with `click({ button: 'right' })`, asserts exactly one open menu (`ul#ctx-menu.context-menu-list.is-open` → `toHaveCount(1)`) and 7 `<li>` rows (6 actions — Edit/Cut/Copy/Paste/Delete/Quit — plus a `<li><hr></li>` separator that also counts).
 - **`learning.md`** — Reference notes for this module: all supported keyboard keys (modifiers, navigation, F1–F12, numpad, media keys), `keyboard` methods (`press` / `type` / `insertText` / `down` / `up`), mouse methods (`up` / `down` / `click` / `dblclick` / `move` / `wheel`), key combinations, hover options, and all three drag & drop approaches.
 
 ### `tests/Live_Task/`
@@ -319,6 +332,18 @@ open tta-report/index.html
 - **`Task_17th_July_advanced.spec.ts`** — Live task: logs into the AwesomeQA HR portal, loops through the employee table row by row, finds the first employee with "Terminated" status, and clicks its delete icon via a relative XPath (`parent::div` / `following-sibling::div`).
 - **`Task_19th_July.spec.ts`** — Live task with two web table challenges on the TTA table page: find the country of "Yoshi Tannamuri" in the companies table via `locator().filter()`, and find "Mia Hoffmann"'s email in the paginated employees table with a `while` loop that clicks Next until the row appears.
 - **`Task_20th_July.spec.ts`** — Live task: SpiceJet booking widget — select origin (Delhi) and destination (Bengaluru) via the `to-testID-origin` / `to-testID-destination` containers, typing with `pressSequentially` to trigger the airport typeahead, asserting the picked values with `toHaveValue`. Grants the `notifications` permission so Chrome's native "Allow this time" prompt never appears.
+- **`Task_22nd_July.spec.ts`** — Live task on the TTA hover-menu widget: hovers the Add-ons nav item, counts and prints all dropdown options via XPath + `allInnerTexts()`, clicks the Wifi option by test id, and asserts the output panel with a web-first `toContainText`.
+
+### `tests/11_JS_Alerts/`
+
+- **`270_js_alerts.spec.ts`** — Native `alert` / `confirm` / `prompt` handling on the-internet.herokuapp.com: registers `page.once('dialog', ...)` handlers **before** triggering each dialog (dialogs auto-dismiss if no handler is active), asserts dialog type/message, and accepts the prompt with custom text via `dialog.accept('Playwright')`.
+
+### `tests/12_Handle_SVG/`
+
+- **`271_svg.spec.ts`** — Flipkart search driven by the SVG search icon: fills `input[name="q"]`, clicks the icon inside the form's submit button (`form[action^="/search"] button[type="submit"] svg`), then loops over product titles extracted with the `//div[contains(@data-id,'CPU') or ...]/div/a[2]` XPath. Lessons baked in:
+  - `locator.count()` does **not** auto-wait — called before results render it returns 0, so the loop is skipped. Wait for the first result (`first().waitFor()`) before counting.
+  - A bare `page.locator('svg')` matches ~86 icons on the page (hearts, logo, cart...) — scope the locator to the one you need.
+  - Flipkart's page re-hydrates ~2 s after load and can **wipe a filled input** (empty search box on the results screenshot). Refill until the value sticks (`expect(...).toPass()` retry loop) and confirm the search committed with `waitForURL(/q=macmini/)` before extracting results.
 
 ## Configuration Highlights
 
@@ -332,6 +357,7 @@ Defined in `playwright.config.ts`:
 - `reporter: ["line"], ["allure-playwright"], ["./reporters/custom-reporter.ts"]` — multiple reporters (line, Allure, custom HTML)
 - `headless: false` — run browsers in headed mode by default
 - `screenshot: 'only-on-failure'` — capture screenshots only for failed tests
+- `viewport: { width: 1920, height: 1080 }` — full-HD viewport, set both at the top level **and** inside the chromium project (project-level `...devices['Desktop Chrome']` would otherwise reset it to the device default 1280×720)
 - `trace: 'retain-on-failure'` — capture traces and keep them only for failed tests (open with `npx playwright show-trace <path>`)
 - **Projects:** Chromium only (Firefox & WebKit commented out)
 - CI-aware retries (`retries: 2`) and single worker (`workers: 1`) when `process.env.CI` is set
@@ -360,6 +386,14 @@ Defined in `playwright.config.ts`:
 ### `fill()` doesn't open suggestions on typeahead inputs
 
 - `fill()` sets the input value in one shot; React typeaheads (e.g., SpiceJet's airport picker) only filter/autocomplete on real key events. Type with `pressSequentially('del', { delay: 150 })` instead, then assert the completed value with `expect(input).toHaveValue(/Delhi/)` — input *values* are invisible to `toContainText`.
+
+### `locator.count()` returns 0 right after navigation
+
+- `count()` (and `allTextContents()` / `allInnerTexts()`) do **not** auto-wait — they return whatever exists at the instant of the call. Actions, assertions and `waitFor()` auto-wait; these don't. Wait for the page to reach a known state first, e.g. `await locator.first().waitFor({ state: 'visible' })` (see `271_svg.spec.ts`).
+
+### Flipkart clears a filled search input (empty results page)
+
+- Flipkart's app re-hydrates shortly after load and can reset a React-controlled input, wiping your `fill()` — the subsequent search click then submits an empty query ("All Categories" results, blank search box). Retry the fill until the value survives (`await expect(async () => { await input.fill('macmini'); await page.waitForTimeout(2500); expect(await input.inputValue()).toBe('macmini'); }).toPass()`) and verify the search actually happened with `await page.waitForURL(/q=macmini/)` (see `271_svg.spec.ts`).
 
 ## Learn More
 

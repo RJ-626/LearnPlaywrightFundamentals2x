@@ -41,13 +41,14 @@ export default defineConfig({
     trace: 'retain-on-failure',
     headless: false,
     screenshot: 'only-on-failure',
+    viewport: { width: 1920, height: 1080 },
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
     },
 
     /*{
