@@ -113,7 +113,11 @@ npx playwright show-report
 │   ├── 11_JS_Alerts/
 │   │   └── 270_js_alerts.spec.ts                   # JS alert / confirm / prompt handling via dialog events
 │   ├── 12_Handle_SVG/
-│   │   └── 271_svg.spec.ts                         # Flipkart search via the SVG search icon + result titles
+│   │   ├── 271_svg.spec.ts                         # Flipkart search via the SVG search icon + result titles
+│   │   ├── 272_svg_practice.spec.ts               # SVG practice widget: click shapes, bar chart traversal
+│   │   └── 273_Advance_svg.spec.ts                # India SVG map: SVG-namespace XPath over state paths
+│   ├── 13_Shadow_DOM/
+│   │   └── 274_shadow_DOM.spec.ts                 # Chained card.locator() piercing an open shadow root
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -344,6 +348,12 @@ open tta-report/index.html
   - `locator.count()` does **not** auto-wait — called before results render it returns 0, so the loop is skipped. Wait for the first result (`first().waitFor()`) before counting.
   - A bare `page.locator('svg')` matches ~86 icons on the page (hearts, logo, cart...) — scope the locator to the one you need.
   - Flipkart's page re-hydrates ~2 s after load and can **wipe a filled input** (empty search box on the results screenshot). Refill until the value sticks (`expect(...).toPass()` retry loop) and confirm the search committed with `waitForURL(/q=macmini/)` before extracting results.
+- **`272_svg_practice.spec.ts`** — SVG practice widget on the TTA site: clicks `#circle-blue` and asserts the `#shapes-output` panel shows "Blue circle"; clicks a bar-chart button and a "4 stars" radio via `getByRole`; then loops over all `.bar` elements with `.all()` printing `data-quarter` / `height` attributes. Contains `page.pause()` — run with Debug, not the normal Run button.
+- **`273_Advance_svg.spec.ts`** — India SVG map on simplemaps.com: selects every state path with an XPath `//div[@id='admin1_map_inner']//*[name()='svg']//*[name()='path' and contains(@class,'sm_state')]`, reads each path's `class` attribute, and clicks Uttar Pradesh (`INUP`). Key lesson: `path` lives in the SVG namespace — `//svg`/`//path` tag selectors match nothing outside HTML, so namespace-agnostic `*[name()='svg']`-style predicates are required. Contains `page.pause()` — run with Debug.
+
+### `tests/13_Shadow_DOM/`
+
+- **`274_shadow_DOM.spec.ts`** — Shadow DOM interaction on the TTA shadow-dom widget (login card rendered inside an open shadow root): grabs the card via `getByTestId('card-account')`, then chains **`card.locator(...)`** to pierce the shadow boundary and fill email/password, clicks the submit button, and asserts `card-account-status` contains the submitted email. Key lesson: there is no `expandShadow`/`enterShadow` step — `locator()` chaining crosses shadow roots automatically; you just don't use `/` or `>>` text-form paths from `document`-level. The `focus`/hydration delay is why `beforeEach` navigates once and the assertions run web-first (`toContainText`).
 
 ## Configuration Highlights
 
@@ -366,9 +376,24 @@ Defined in `playwright.config.ts`:
 
 ### VS Code: green run buttons missing
 
-- Ensure the **chromium** project is enabled in the Playwright sidebar (Projects section) — buttons only show for enabled projects.
+- Ensure the **chromium project** is enabled in the Playwright sidebar (Projects section) — buttons only show for enabled projects.
 - Run **Playwright: Reload tests** from the Command Palette, or kill leftover `node.exe ... cli.js test-server` processes and reload the window.
 - This repo's `.vscode/settings.json` sets `playwright.reuseServer: false` so a wedged test server is never reused across sessions.
+
+### NEW spec file not discovered (run buttons + CLI both "silent")
+
+Discovery failures are **completely silent** — a brand-new spec (e.g. a freshly created `13_Shadow_DOM/274_shadow_DOM.spec.ts`) can simply vanish from the tree, both in VS Code and in `npx playwright test <file> --list` ("No tests found" even though the path is correct), while *other* folders still list fine. The pattern matches config bugs, but here the config (`testMatch: ['tests/**/*.spec.ts']`) was correct and nothing is reported — so don't waste time re-editing the config when a **new** file is the one missing.
+
+Cause in this environment: the project lives in **OneDrive**, and OneDrive file placeholders/hydration can wedge discovery mid-scan when a folder was just written (files appear as `ReparsePoint` until OneDrive hydrates them). It showed up exactly after creating the 274 file, and cleared on its own once hydration/sync completed — earlier this same OneDrive behavior added ~17s per run (see `outputDir` note in Configuration Highlights).
+
+How to diagnose (in this order):
+
+1. Check whether it's *only* the new file: `npx playwright test --list | findstr /i "<folder_name>"`. If old siblings in the same folder still list, the config is fine — it's environmental.
+2. If `--list` drops the folder, wait for OneDrive to settle (or right-click the new folder → **Always keep on this device**), then re-run `--list`.
+3. `npx tsc --noEmit` to rule out a syntax error in the new spec (a compile error also hides the test).
+4. Only then touch VS Code (Test: Refresh Tests → Developer: Reload Window).
+
+Long-term fix: move the repo out of OneDrive (e.g. `C:\projects\...`); `File Providers: Experimental` in VS Code 1.90+ / `.vscode/settings.json` tweaks get you only part of the way.
 
 ### `page.pause()` hangs the test run
 
