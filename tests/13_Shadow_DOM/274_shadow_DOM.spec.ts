@@ -20,6 +20,18 @@ test.describe('shadow DOM', () => {
         await expect(card.getByTestId('card-account-status')).toContainText('student@testingacademy.com');
 
 
+        const cart = await page.getByTestId('counter-cart');
+        await cart.getByRole('button', { name: 'Increment' }).click();
+        await cart.getByRole('button', { name: 'Increment' }).click();
+        await expect(cart.getByTestId('counter-value')).toContainText('5');
+
+
+        await page.getByTestId('nested-host');
+        await page.getByTestId('card-inside-email').fill("thetestingacademy.com");
+        await page.getByTestId('card-inside-password').fill("123456");
+        await page.getByTestId('card-inside-submit').click();
+        await expect(page.getByTestId('card-inside-status')).toContainText('thetestingacademy.com');
+
         await page.waitForTimeout(10000);
 
 

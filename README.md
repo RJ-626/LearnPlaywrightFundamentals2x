@@ -117,7 +117,13 @@ npx playwright show-report
 │   │   ├── 272_svg_practice.spec.ts               # SVG practice widget: click shapes, bar chart traversal
 │   │   └── 273_Advance_svg.spec.ts                # India SVG map: SVG-namespace XPath over state paths
 │   ├── 13_Shadow_DOM/
-│   │   └── 274_shadow_DOM.spec.ts                 # Chained card.locator() piercing an open shadow root
+│   │   └── 274_shadow_DOM.spec.ts                 # Chained card.locator() piercing an open shadow root (login card + counter + nested host)
+│   ├── 14_FileUpload/
+│   │   ├── 275_File_upload.spec.ts                # Single file upload via setInputFiles + path.join(__dirname, ...)
+│   │   ├── 276_Multiple_file_upload.spec.ts       # Multi-file upload with in-memory buffers (no physical files needed)
+│   │   ├── File.txt                               # Upload fixture used by 275
+│   │   ├── File1.txt                              # Extra upload fixture
+│   │   └── File2.png                              # Extra upload fixture
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -353,7 +359,12 @@ open tta-report/index.html
 
 ### `tests/13_Shadow_DOM/`
 
-- **`274_shadow_DOM.spec.ts`** — Shadow DOM interaction on the TTA shadow-dom widget (login card rendered inside an open shadow root): grabs the card via `getByTestId('card-account')`, then chains **`card.locator(...)`** to pierce the shadow boundary and fill email/password, clicks the submit button, and asserts `card-account-status` contains the submitted email. Key lesson: there is no `expandShadow`/`enterShadow` step — `locator()` chaining crosses shadow roots automatically; you just don't use `/` or `>>` text-form paths from `document`-level. The `focus`/hydration delay is why `beforeEach` navigates once and the assertions run web-first (`toContainText`).
+- **`274_shadow_DOM.spec.ts`** — Shadow DOM interaction on the TTA shadow-dom widget (login card rendered inside an open shadow root): grabs the card via `getByTestId('card-account')`, then chains **`card.locator(...)`** to pierce the shadow boundary and fill email/password, clicks the submit button, and asserts `card-account-status` contains the submitted email. Also drives a **counter widget** inside another shadow root (clicks its Increment buttons and asserts `counter-value`) and an additional login form inside a **nested shadow host** (`card-inside-*` test ids). Key lesson: there is no `expandShadow`/`enterShadow` step — `locator()` chaining (and even top-level `getByTestId`) crosses shadow roots automatically; you just don't use `/` or `>>` text-form paths from `document`-level. The `focus`/hydration delay is why `beforeEach` navigates once and the assertions run web-first (`toContainText`).
+
+### `tests/14_FileUpload/`
+
+- **`275_File_upload.spec.ts`** — Single file upload on the-internet.herokuapp.com/upload: resolves the fixture with `path.join(__dirname, 'File.txt')`, uploads it via `page.setInputFiles('#file-upload')`, submits with `#file-submit`, and asserts the `File Uploaded!` heading plus the uploaded file link text. Key lesson: Playwright does **not** open the OS file-picker dialog for `<input type="file">` — `setInputFiles()` fills it directly, and `__dirname`-relative paths keep the fixture findable regardless of the working directory. Contains `page.pause()` — run with Debug, not the normal Run button.
+- **`276_Multiple_file_upload.spec.ts`** — Multi-file upload on the PatternFly multiple-file-upload demo: passes an **array of descriptor objects** (`{ name, mimeType, buffer }`) to `setInputFiles()` so both files are injected from in-memory `Buffer`s — no physical files on disk needed. Key lesson: `setInputFiles` accepts either real file paths **or** buffer descriptors (handy for CI where fixtures can be generated on the fly).
 
 ## Configuration Highlights
 
