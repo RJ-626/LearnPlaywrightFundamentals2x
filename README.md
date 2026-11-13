@@ -161,7 +161,7 @@ This project includes a **custom reporter** (`reporters/custom-reporter.ts`) tha
 - **Summary Dashboard** — Total, Passed, Failed, Skipped, Pass Rate, Duration
 - **Environment Meta Bar** — Environment, Browser, Platform, Workers, Run ID, Start Time
 - **Priority & Status Filters** — Click to filter tests by P0/P1/P2 or Passed/Failed/Skipped
-- **Detailed Test Table** — Sr No, Suite, Test Name, Author, Priority, Tags, File, Timestamps, Duration, Status, Screenshot, Video, Trace
+- **Detailed Test Table** — Sr No, Suite, Test Name, Author (Rahul Jaiswal), Role (Lead Consultant), Priority, Tags, File, Timestamps, Duration, Status, Screenshot, Video, Trace
 - **Expandable Test Logs** — Click "Test Logs" to view all nested `test.step()` hierarchies with durations
 - **Auto-captured Attachments** — Screenshots, videos, and traces are automatically saved to `custom-report/attachments/` and linked in the report
 
@@ -232,7 +232,7 @@ This project also includes the **TTA Reporter** — a custom Playwright reporter
 - **Step-Level Detail** — Nested `test.step()` results with durations, console logs, screenshots, errors, and stack traces
 - **Video Timestamps** — Each step shows the exact video time range to jump to
 - **Auto-captured Attachments** — Screenshots, videos, and traces are copied into `tta-report/screenshots/`, `tta-report/videos/`, and `tta-report/traces/`
-- **Environment Metadata** — Environment (`TEST_ENV`, defaults to UAT), author (`TEST_AUTHOR`, defaults to TTA-QA), browser, platform, workers, and run ID
+- **Environment Metadata** — Environment (`TEST_ENV`, defaults to UAT), author (`TEST_AUTHOR`, defaults to **Rahul Jaiswal**), role (`TEST_ROLE`, defaults to **Lead Consultant**), browser, platform, workers, and run ID
 
 ### How to Use
 

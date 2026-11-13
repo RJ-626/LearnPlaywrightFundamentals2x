@@ -29,6 +29,7 @@ interface TestInfo {
   tags: string[];
   priority: string;
   author: string;
+  role: string;
   startTime?: string;
   endTime?: string;
   screenshotPath?: string;
@@ -237,7 +238,8 @@ class CustomReporter implements Reporter {
       retry: result.retry,
       tags,
       priority,
-      author: 'QA Team',
+      author: process.env.TEST_AUTHOR || 'Rahul Jaiswal',
+      role: process.env.TEST_ROLE || 'Lead Consultant',
       startTime: new Date(Date.now() - result.duration).toISOString(),
       endTime: new Date().toISOString(),
       screenshotPath,
@@ -440,6 +442,7 @@ class CustomReporter implements Reporter {
             </div>
           </td>
           <td class="cell-author">${this.escapeHtml(test.author)}</td>
+          <td class="cell-author">${this.escapeHtml(test.role)}</td>
           <td class="cell-center">${priorityBadge}</td>
           <td class="cell-tags">${tagsHtml}</td>
           <td class="cell-file">${this.escapeHtml(test.file)}</td>
@@ -940,6 +943,7 @@ class CustomReporter implements Reporter {
             <th>Suite</th>
             <th>Test Name</th>
             <th>Author</th>
+            <th>Role</th>
             <th class="cell-center">Priority</th>
             <th>Tags</th>
             <th>File</th>

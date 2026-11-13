@@ -17,7 +17,7 @@ test.describe("VWO — session reuse", () => {
         allure.tag("smoke");
         allure.severity("critical");
         allure.description("Verify that a saved session allows direct navigation to the VWO dashboard without re-authentication.");
-        allure.owner("QA Team");
+        allure.owner("Rahul Jaiswal");
 
         await test.step("Open VWO dashboard using saved session", async () => {
             await page.goto("https://app.vwo.com/#/dashboard/get-started?accountId=1227004");
@@ -47,7 +47,7 @@ test.describe("VWO — session reuse", () => {
         allure.tag("regression");
         allure.severity("normal");
         allure.description("Verify that a saved session allows direct navigation to VWO account settings without re-authentication.");
-        allure.owner("QA Team");
+        allure.owner("Rahul Jaiswal");
 
         await test.step("Open VWO account settings using saved session", async () => {
             await page.goto("https://app.vwo.com/#/settings/accounts/general?accountId=1227004");

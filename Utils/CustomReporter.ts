@@ -800,6 +800,7 @@ class CustomTTAReporter implements Reporter {
                     <th>Suite</th>
                     <th>Test Name</th>
                     <th>Author</th>
+                    <th>Role</th>
                     <th>Priority</th>
                     <th>Tags</th>
                     <th>File</th>
@@ -825,7 +826,8 @@ class CustomTTAReporter implements Reporter {
             const testGroup = test.tags.find(t => t.includes('P0') || t.includes('P1') || t.includes('P2')) ||
                 test.describePath[0] || 'E2E';
 
-            const author = process.env.TEST_AUTHOR || 'TTA-QA';
+            const author = process.env.TEST_AUTHOR || 'Rahul Jaiswal';
+            const role = process.env.TEST_ROLE || 'Lead Consultant';
 
             const testStartTime = new Date(this.startTime.getTime());
             const testEndTime = new Date(testStartTime.getTime() + test.duration);
@@ -840,6 +842,7 @@ class CustomTTAReporter implements Reporter {
                         <span class="test-name-link" onclick="toggleTestDetail('${test.id}')">${this.escapeHtml(test.title)}</span>
                     </td>
                     <td class="col-author">${author}</td>
+                    <td class="col-author">${role}</td>
                     <td class="col-group">${this.escapeHtml(testGroup)}</td>
                     <td class="col-tags">${test.tags.map(t => `<span class="tag">${t}</span>`).join(' ')}</td>
                     <td class="col-file">${this.escapeHtml(test.location)}</td>
