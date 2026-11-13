@@ -124,6 +124,13 @@ npx playwright show-report
 │   │   ├── File.txt                               # Upload fixture used by 275
 │   │   ├── File1.txt                              # Extra upload fixture
 │   │   └── File2.png                              # Extra upload fixture
+│   ├── 15_File_Download/
+│   │   └── 277_File_Download.spec.ts              # Waits for the download event and saves the file with saveAs
+│   ├── 16_Scroll_toElement/
+│   │   └── 278_Scroll.spec.ts                     # scrollIntoViewIfNeeded, scrollBy/scrollTo via evaluate, lazy-list growth
+│   ├── 17_Expect_Assertions/
+│   │   ├── 279_Expect.spec.ts                     # Generic expect assertions without a page (toBe, toEqual, truthy/falsy, >, <)
+│   │   └── 280_Expect.spec.ts                     # Web-first locator assertions (toHaveText, toBeVisible, toHaveAttribute)
 │   ├── Live_Task/
 │   │   ├── Task_6th_July.spec.ts           # Browser context demo with multiple contexts
 │   │   ├── Task_8th_July.spec.ts           # HTML form creation task
@@ -365,6 +372,21 @@ open tta-report/index.html
 
 - **`275_File_upload.spec.ts`** — Single file upload on the-internet.herokuapp.com/upload: resolves the fixture with `path.join(__dirname, 'File.txt')`, uploads it via `page.setInputFiles('#file-upload')`, submits with `#file-submit`, and asserts the `File Uploaded!` heading plus the uploaded file link text. Key lesson: Playwright does **not** open the OS file-picker dialog for `<input type="file">` — `setInputFiles()` fills it directly, and `__dirname`-relative paths keep the fixture findable regardless of the working directory. Contains `page.pause()` — run with Debug, not the normal Run button.
 - **`276_Multiple_file_upload.spec.ts`** — Multi-file upload on the PatternFly multiple-file-upload demo: passes an **array of descriptor objects** (`{ name, mimeType, buffer }`) to `setInputFiles()` so both files are injected from in-memory `Buffer`s — no physical files on disk needed. Key lesson: `setInputFiles` accepts either real file paths **or** buffer descriptors (handy for CI where fixtures can be generated on the fly).
+
+### `tests/15_File_Download/`
+
+- **`277_File_Download.spec.ts`** — File download on the TTA upload-download widget: races `page.waitForEvent('download')` with the "Download text file" click inside `Promise.all`, then persists the file with `download.saveAs(path.join('output', download.suggestedFilename()))`. Key lessons:
+  - Start listening for the `download` event **before** triggering it (`Promise.all([waitForEvent, click])`) — the event fires the moment the click resolves.
+  - `saveAs()` expects a **full file path**, not a directory — build it with `path.join(dir, download.suggestedFilename())` rather than string-concatenating (`saveAs('output/') + filename` silently does nothing useful).
+
+### `tests/16_Scroll_toElement/`
+
+- **`278_Scroll.spec.ts`** — Scrolling on the TTA scroll widget: brings a deep element on-screen with `scrollIntoViewIfNeeded()` before clicking it, scrolls by pixels / to the bottom / back to the top via `page.evaluate('window.scrollBy(...)')` / `window.scrollTo(0, document.body.scrollHeight)`, and proves lazy loading by counting `li` items in the `lazy-list` before and after scrolling to `lazy-item-10` (the list grows past 10 once visible). Key lesson: `scrollIntoViewIfNeeded()` is the Playwright-native way to reach off-screen elements; raw `window.*` scrolling needs `page.evaluate()`. Contains `page.pause()` — run with Debug, not the normal Run button.
+
+### `tests/17_Expect_Assertions/`
+
+- **`279_Expect.spec.ts`** — Generic (non-page) `expect` assertions: `toBe` / `not.toBe`, `toBeFalsy` / `toBeTruthy`, `toBeGreaterThan` / `toBeLessThan`, and deep equality with `toEqual`.
+- **`280_Expect.spec.ts`** — Web-first locator assertions on the TTA multiple-element-filter page: `toHaveText` (exact text match), `toBeVisible`, and `toHaveAttribute('placeholder', ...)` — these auto-wait and retry, unlike `expect(1+1).toBe(2)`-style sync assertions.
 
 ## Configuration Highlights
 
